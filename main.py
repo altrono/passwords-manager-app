@@ -34,16 +34,22 @@ def save():
     if len(website) < 3 or len(password) < 3:
         messagebox.showinfo(title="Oops", message="Please make sure you haven't left any fields empty \nnor put an incorrect email address.")
     else:
-        with open('data.json', 'r') as data_file:
-            # Read the old data
-            data = json.load(data_file)
+        try:
+            with open('data.json', 'r') as data_file:
+                # Read the old data
+                data = json.load(data_file)
+        except FileNotFoundError:
+            with open('data.json', 'w') as data_file:
+                # Write new data
+                json.dump(new_data, data_file, indent=4)
+        else:
             # Updating old data with new data
             data.update(new_data)
 
-        with open('data.json', 'a') as data_file:
-            # Save Updated data
-            json.dump(new_data, data_file, indent=4)
-
+            with open('data.json', 'a') as data_file:
+                # Save Updated data
+                json.dump(new_data, data_file, indent=4)
+        finally:
             website_entry.delete(0, END)
             password_entry.delete(0, END)
 # ---------------------------- UI SETUP ------------------------------- #
