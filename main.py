@@ -3,6 +3,7 @@ from tkinter import messagebox
 import random
 import string
 import pyperclip
+import json
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 
@@ -23,18 +24,28 @@ def save():
     website = website_entry.get()
     email = email_entry.get()
     password = password_entry.get()
+    new_data = {
+        website: {
+            'email': email,
+            'password': password,
+        }
+    }
 
     if len(website) < 3 or len(password) < 3:
         messagebox.showinfo(title="Oops", message="Please make sure you haven't left any fields empty \nnor put an incorrect email address.")
     else:
-        is_ok = messagebox.askyesno(title=website,
-                                    message=f"These are the details entered: \nEmail: {email} \nPassword: {password} \nIs it ok to save?")
-        if is_ok:
-            with open('data.txt', 'a') as data_file:
-                data_file.write(f'{website} | {email} | {password} \n')
-                website_entry.delete(0, END)
-                email_entry.delete(0, END)
-                password_entry.delete(0, END)
+        with open('data.json', 'r') as data_file:
+            # Read the old data
+            data = json.load(data_file)
+            # Updating old data with new data
+            data.update(new_data)
+
+        with open('data.json', 'a') as data_file:
+            # Save Updated data
+            json.dump(new_data, data_file, indent=4)
+
+            website_entry.delete(0, END)
+            password_entry.delete(0, END)
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title('Password Manager')
